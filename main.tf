@@ -11,11 +11,11 @@ resource "aws_eks_node_group" "eks_ng" {
   }
 
   instance_types = [var.instance_type]
-  disk_size = var.disk_size
-  ami_type = var.ami_type
+  disk_size      = var.disk_size
+  ami_type       = var.ami_type
 
   remote_access {
-    ec2_ssh_key = var.enable_remote_access == true ? var.ssh_key_pair : null
+    ec2_ssh_key               = var.enable_remote_access == true ? var.ssh_key_pair : null
     source_security_group_ids = length(var.sg_ids) == 0 ? null : var.sg_ids
   }
 
@@ -33,8 +33,8 @@ resource "aws_iam_role" "eks_ng_role" {
 
   assume_role_policy = jsonencode({
     Statement = [{
-      Action    = "sts:AssumeRole"
-      Effect    = "Allow"
+      Action = "sts:AssumeRole"
+      Effect = "Allow"
       Principal = {
         Service = "ec2.amazonaws.com"
       }
