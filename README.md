@@ -16,6 +16,7 @@ This terraform module will deploy the following services:
 | instance_type        | string  | Type of instance to be used for EKS nodes                                                                | t3.medium  | N        |
 | disk_size            | number  | Size of EBS volume attached to each EKS node                                                             | 20         | N        |
 | ami_type             | string  | Type of AMI to be used for EKS node. Supported values: AL2_x86_64, AL2_x86_64_GPU(AMI with GPU support)  | AL2_x86_64 | N        |
+| enable_ssm_access | boolean | Allow remote access to EKS nodes via SSM Session Manager                                                            | true      | N        |
 | enable_remote_access | boolean | Whether to enable remote access to EKS nodes.                                                            | false      | N        |
 | ssh_key_pair         | string  | SSH Key pair to be used to remotely access EKS node. **Required if enable_remote_access is set to true** |            | N        |
 | sg_ids               | list    | List of security group ids to attach to EKS nodes for restricting SSH access if enabled.                 |            | N        |

@@ -57,3 +57,9 @@ resource "aws_iam_role_policy_attachment" "ng_registry_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
   role       = aws_iam_role.eks_ng_role.name
 }
+
+resource "aws_iam_role_policy_attachment" "ssm_policy" {
+  count      = var.enable_ssm_access ? 1 : 0
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  role       = aws_iam_role.eks_ng_role.name
+}

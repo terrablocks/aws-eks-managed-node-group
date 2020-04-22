@@ -26,6 +26,11 @@ variable "ami_type" {
   default = "AL2_x86_64"
 }
 
+variable "enable_ssm_access" {
+  default     = true
+  description = "Allow remote access to EKS nodes via SSM Session Manager"
+}
+
 variable "enable_remote_access" {
   default = false
 }
