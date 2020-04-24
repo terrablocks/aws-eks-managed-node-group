@@ -29,7 +29,7 @@ resource "aws_eks_node_group" "eks_ng" {
 }
 
 resource "aws_iam_role" "eks_ng_role" {
-  name = "${var.eks_cluster_name}-ng-role"
+  name_prefix = "${var.eks_cluster_name}-ng-role"
 
   assume_role_policy = jsonencode({
     Statement = [{

@@ -24,8 +24,10 @@ This terraform module will deploy the following services:
 ## Outputs
 | Parameter           | Type   | Description               |
 |---------------------|--------|---------------------------|
-| eks_ng_arn           | string | ARN of EKS node group created            |
-| eks_ng_id | string | EKS Cluster name and EKS Node Group name separated by a colon       |
+| arn           | string | ARN of EKS node group created            |
+| id | string | EKS Cluster name and EKS Node Group name separated by a colon       |
+| role_name           | string | Name of IAM role created for node group            |
+| status           | string | Status of EKS node group            |
 
 ## Deployment
 - `terraform init` - download plugins required to deploy resources
