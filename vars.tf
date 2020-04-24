@@ -28,6 +28,8 @@ variable "disk_size" {
 
 variable "labels" {
   type = map
+
+  default = {}
 }
 
 variable "ami_type" {
