@@ -8,13 +8,15 @@ This terraform module will deploy the following services:
 ## Variables
 | Parameter            | Type    | Description                                                                                              | Default    | Required |
 |----------------------|---------|----------------------------------------------------------------------------------------------------------|------------|----------|
-| eks_cluster_name     | string  | Name of EKS cluster                                                                                      |            | Y        |
+| cluster_name     | string  | Name of EKS cluster                                                                                      |            | Y        |
+| node_group_name     | string  | Name of EKS Node Group                                                                                      | {cluster_name}-ng           | N        |
 | subnet_ids           | list    | List of subnet ids to be used for launching EKS nodes                                                    |            | Y        |
 | desired_size         | number  | Initial number of nodes to be created                                                                    | 2          | N        |
 | max_size             | number  | Maximum number of nodes                                                                                  | 2          | N        |
 | min_size             | number  | Minimum number of nodes to maintain at any given point of time                                           | 2          | N        |
 | instance_type        | string  | Type of instance to be used for EKS nodes                                                                | t3.medium  | N        |
 | disk_size            | number  | Size of EBS volume attached to each EKS node                                                             | 20         | N        |
+| labels            | map  | Key-value map of Kubernetes labels to be apply on nodes                                                             |          | N        |
 | ami_type             | string  | Type of AMI to be used for EKS node. Supported values: AL2_x86_64, AL2_x86_64_GPU(AMI with GPU support)  | AL2_x86_64 | N        |
 | enable_ssm_access | boolean | Allow remote access to EKS nodes via SSM Session Manager                                                            | true      | N        |
 | enable_remote_access | boolean | Whether to enable remote access to EKS nodes.                                                            | false      | N        |
@@ -26,6 +28,7 @@ This terraform module will deploy the following services:
 |---------------------|--------|---------------------------|
 | arn           | string | ARN of EKS node group created            |
 | id | string | EKS Cluster name and EKS Node Group name separated by a colon       |
+| cluster_name           | string | Name of EKS cluster attached to the node group            |
 | role_name           | string | Name of IAM role created for node group            |
 | status           | string | Status of EKS node group            |
 

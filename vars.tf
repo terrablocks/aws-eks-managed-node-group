@@ -1,4 +1,8 @@
-variable "eks_cluster_name" {}
+variable "cluster_name" {}
+
+variable "node_group_name" {
+  default = ""
+}
 
 variable "subnet_ids" {}
 
@@ -20,6 +24,10 @@ variable "instance_type" {
 
 variable "disk_size" {
   default = 20
+}
+
+variable "labels" {
+  type = map
 }
 
 variable "ami_type" {

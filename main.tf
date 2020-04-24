@@ -1,6 +1,6 @@
 resource "aws_eks_node_group" "eks_ng" {
-  cluster_name    = var.eks_cluster_name
-  node_group_name = "${var.eks_cluster_name}-eks-node-group"
+  cluster_name    = var.cluster_name
+  node_group_name = var.node_group_name == "" ? "${var.cluster_name}-ng" : var.node_group_name
   node_role_arn   = aws_iam_role.eks_ng_role.arn
   subnet_ids      = var.subnet_ids
 
@@ -13,6 +13,8 @@ resource "aws_eks_node_group" "eks_ng" {
   instance_types = [var.instance_type]
   disk_size      = var.disk_size
   ami_type       = var.ami_type
+
+  labels = length(var.labels) == 0 ? null : var.labels
 
   remote_access {
     ec2_ssh_key               = var.enable_remote_access == true ? var.ssh_key_pair : null
@@ -29,7 +31,7 @@ resource "aws_eks_node_group" "eks_ng" {
 }
 
 resource "aws_iam_role" "eks_ng_role" {
-  name_prefix = "${var.eks_cluster_name}-ng-role"
+  name_prefix = "${var.cluster_name}-ng-role"
 
   assume_role_policy = jsonencode({
     Statement = [{
