@@ -1,7 +1,8 @@
 # Launch an EKS Managed Node Group
 
 This terraform module will deploy the following services:
-- EC2 Instances
+- EKS Node Group
+- Auto Scaling Group
 - IAM Role
 
 # Usage Instructions:
