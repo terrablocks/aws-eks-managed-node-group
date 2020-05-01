@@ -1,5 +1,5 @@
 resource "aws_eks_node_group" "eks_ng" {
-  count = var.enable_remote_access == true ? 0 : 1
+  count           = var.enable_remote_access == true ? 0 : 1
   cluster_name    = var.cluster_name
   node_group_name = var.node_group_name == "" ? "${var.cluster_name}-ng" : var.node_group_name
   node_role_arn   = aws_iam_role.eks_ng_role.arn
@@ -27,7 +27,7 @@ resource "aws_eks_node_group" "eks_ng" {
 }
 
 resource "aws_eks_node_group" "eks_ng_ssh" {
-  count = var.enable_remote_access == true ? 1 : 0
+  count           = var.enable_remote_access == true ? 1 : 0
   cluster_name    = var.cluster_name
   node_group_name = var.node_group_name == "" ? "${var.cluster_name}-ng" : var.node_group_name
   node_role_arn   = aws_iam_role.eks_ng_role.arn
@@ -60,7 +60,7 @@ resource "aws_eks_node_group" "eks_ng_ssh" {
 }
 
 resource "aws_iam_role" "eks_ng_role" {
-  name_prefix = "${var.cluster_name}-ng-role-"
+  name_prefix           = "${var.cluster_name}-ng-role-"
   force_detach_policies = true
 
   assume_role_policy = jsonencode({
@@ -99,7 +99,7 @@ resource "aws_iam_role_policy_attachment" "ssm_policy" {
 # Policy required for cluster autoscaling
 resource "aws_iam_role_policy" "eks_scaling_policy" {
   name_prefix = "${var.cluster_name}-ng-role-policy-"
-  role = aws_iam_role.eks_ng_role.id
+  role        = aws_iam_role.eks_ng_role.id
 
   policy = <<-EOF
   {
