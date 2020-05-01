@@ -1,4 +1,33 @@
 resource "aws_eks_node_group" "eks_ng" {
+  count = var.enable_remote_access == true ? 0 : 1
+  cluster_name    = var.cluster_name
+  node_group_name = var.node_group_name == "" ? "${var.cluster_name}-ng" : var.node_group_name
+  node_role_arn   = aws_iam_role.eks_ng_role.arn
+  subnet_ids      = var.subnet_ids
+
+  scaling_config {
+    desired_size = var.desired_size
+    max_size     = var.max_size
+    min_size     = var.min_size
+  }
+
+  instance_types = [var.instance_type]
+  disk_size      = var.disk_size
+  ami_type       = var.ami_type
+
+  labels = length(var.labels) == 0 ? null : var.labels
+
+  # Ensure that IAM Role permissions are created before and deleted after EKS Node Group handling.
+  # Otherwise, EKS will not be able to properly delete EC2 Instances and Elastic Network Interfaces.
+  depends_on = [
+    aws_iam_role_policy_attachment.ng_worker_policy,
+    aws_iam_role_policy_attachment.ng_cni_policy,
+    aws_iam_role_policy_attachment.ng_registry_policy,
+  ]
+}
+
+resource "aws_eks_node_group" "eks_ng_ssh" {
+  count = var.enable_remote_access == true ? 1 : 0
   cluster_name    = var.cluster_name
   node_group_name = var.node_group_name == "" ? "${var.cluster_name}-ng" : var.node_group_name
   node_role_arn   = aws_iam_role.eks_ng_role.arn
@@ -17,8 +46,8 @@ resource "aws_eks_node_group" "eks_ng" {
   labels = length(var.labels) == 0 ? null : var.labels
 
   remote_access {
-    ec2_ssh_key               = var.enable_remote_access == true ? var.ssh_key_pair : null
-    source_security_group_ids = length(var.sg_ids) == 0 ? null : var.sg_ids
+    ec2_ssh_key               = var.ssh_key_pair
+    source_security_group_ids = var.sg_ids
   }
 
   # Ensure that IAM Role permissions are created before and deleted after EKS Node Group handling.
