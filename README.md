@@ -5,7 +5,7 @@ This terraform module will deploy the following services:
 - Launch Template
 - Auto Scaling Group
 - IAM Role
-- IAM Policy
+- IAM Role Policy
 
 # Usage Instructions:
 ## Variables
