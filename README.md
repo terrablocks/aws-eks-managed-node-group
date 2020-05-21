@@ -63,18 +63,18 @@ Replace `<YOUR CLUSTER NAME>` with your cluster's name, and add the following op
 
 Example:
 ```
-    spec:
-      containers:
-      - command:
-        - ./cluster-autoscaler
-        - --v=4
-        - --stderrthreshold=info
-        - --cloud-provider=aws
-        - --skip-nodes-with-local-storage=false
-        - --expander=least-waste
-        - --node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/<YOUR CLUSTER NAME>
-        - --balance-similar-node-groups
-        - --skip-nodes-with-system-pods=false
+spec:
+  containers:
+  - command:
+  - ./cluster-autoscaler
+  - --v=4
+  - --stderrthreshold=info
+  - --cloud-provider=aws
+  - --skip-nodes-with-local-storage=false
+  - --expander=least-waste
+  - --node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/<YOUR CLUSTER NAME>
+  - --balance-similar-node-groups
+  - --skip-nodes-with-system-pods=false
 ```
 
 #### Set image for `cluster-autoscaler` deployment:
