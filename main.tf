@@ -1,5 +1,5 @@
 resource "aws_eks_node_group" "eks_ng" {
-  count           = var.enable_remote_access == true ? 0 : 1
+  count           = var.ssh_key_pair == "" ? 0 : 1
   cluster_name    = var.cluster_name
   node_group_name = var.node_group_name == "" ? "${var.cluster_name}-ng" : var.node_group_name
   node_role_arn   = aws_iam_role.eks_ng_role.arn
@@ -27,7 +27,7 @@ resource "aws_eks_node_group" "eks_ng" {
 }
 
 resource "aws_eks_node_group" "eks_ng_ssh" {
-  count           = var.enable_remote_access == true ? 1 : 0
+  count           = var.ssh_key_pair != "" ? 1 : 0
   cluster_name    = var.cluster_name
   node_group_name = var.node_group_name == "" ? "${var.cluster_name}-ng" : var.node_group_name
   node_role_arn   = aws_iam_role.eks_ng_role.arn
@@ -87,12 +87,6 @@ resource "aws_iam_role_policy_attachment" "ng_cni_policy" {
 
 resource "aws_iam_role_policy_attachment" "ng_registry_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-  role       = aws_iam_role.eks_ng_role.name
-}
-
-resource "aws_iam_role_policy_attachment" "ssm_policy" {
-  count      = var.enable_ssm_access ? 1 : 0
-  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
   role       = aws_iam_role.eks_ng_role.name
 }
 
