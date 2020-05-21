@@ -38,3 +38,55 @@ This terraform module will deploy the following services:
 - `terraform plan` - get detailed view of resources that will be created, deleted or replaced
 - `terraform apply -auto-approve` - deploy the template without confirmation (non-interactive mode)
 - `terraform destroy -auto-approve` - terminate all the resources created using this template without confirmation (non-interactive mode)
+
+## Cluster Autoscaler Setup (Source: [AWS](https://docs.aws.amazon.com/eks/latest/userguide/cluster-autoscaler.html#ca-deploy))
+To enable Cluster Autoscaler execute the following steps:
+
+#### Deploy Cluster Autoscaler:
+```
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/autoscaler/master/cluster-autoscaler/cloudprovider/aws/examples/cluster-autoscaler-autodiscover.yaml
+```
+
+#### Add annotation to `cluster-autoscaler` deployment:
+```
+kubectl -n kube-system annotate deployment.apps/cluster-autoscaler cluster-autoscaler.kubernetes.io/safe-to-evict="false"
+```
+
+#### Edit `custer-autoscaler` deployment and do the required changes:
+```
+kubectl -n kube-system edit deployment.apps/cluster-autoscaler
+```
+
+Replace `<YOUR CLUSTER NAME>` with your cluster's name, and add the following options:
+- --balance-similar-node-groups
+- --skip-nodes-with-system-pods=false
+
+Example:
+```
+    spec:
+      containers:
+      - command:
+        - ./cluster-autoscaler
+        - --v=4
+        - --stderrthreshold=info
+        - --cloud-provider=aws
+        - --skip-nodes-with-local-storage=false
+        - --expander=least-waste
+        - --node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/<YOUR CLUSTER NAME>
+        - --balance-similar-node-groups
+        - --skip-nodes-with-system-pods=false
+```
+
+#### Set image for `cluster-autoscaler` deployment:
+
+- Visit Cluster Autoscaler [releases](https://github.com/kubernetes/autoscaler/releases) to get the latest semantic version number for your kubernetes version. Eg: If your k8s version is 1.16, look for the latest release of cluster-autoscaler beginning with your k8s version and note down the semantic version (1.16.`x`)
+- You can replace `us` with `asia` or `eu` as per proximity
+
+```
+kubectl -n kube-system set image deployment.apps/cluster-autoscaler cluster-autoscaler=us.gcr.io/k8s-artifacts-prod/autoscaling/cluster-autoscaler:v1.16.x
+```
+
+#### Verify Cluster Autoscaler deployment by checking logs:
+```
+kubectl -n kube-system logs -f deployment.apps/cluster-autoscaler
+```
