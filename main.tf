@@ -1,5 +1,5 @@
 resource "aws_eks_node_group" "eks_ng" {
-  count           = var.ssh_key_pair == "" ? 0 : 1
+  count           = var.ssh_key_pair == "" ? 1 : 0
   cluster_name    = var.cluster_name
   node_group_name = var.node_group_name == "" ? "${var.cluster_name}-ng" : var.node_group_name
   node_role_arn   = aws_iam_role.eks_ng_role.arn
