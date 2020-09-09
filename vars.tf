@@ -6,6 +6,18 @@ variable "node_group_name" {
 
 variable "subnet_ids" {}
 
+variable "launch_template_id" {
+  default = ""
+}
+
+variable "launch_template_name" {
+  default = ""
+}
+
+variable "launch_template_version" {
+  default = "$Latest"
+}
+
 variable "desired_size" {
   default = 2
 }
