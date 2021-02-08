@@ -1,107 +1,5 @@
-resource "aws_eks_node_group" "eks_ng_lt" {
-  count           = var.launch_template_id != "" || var.launch_template_name != "" ? 1 : 0
-  cluster_name    = var.cluster_name
-  node_group_name = var.node_group_name == "" ? "${var.cluster_name}-ng" : var.node_group_name
-  node_role_arn   = aws_iam_role.eks_ng_role.arn
-  subnet_ids      = var.subnet_ids
-
-  scaling_config {
-    desired_size = var.desired_size
-    max_size     = var.max_size
-    min_size     = var.min_size
-  }
-
-  launch_template {
-    id = var.launch_template_name == "" ? var.launch_template_id : null
-    name = var.launch_template_id == "" ? var.launch_template_name : null
-    version = var.launch_template_version
-  }
-
-  labels = length(var.labels) == 0 ? null : var.labels
-
-  # Ensure that IAM Role permissions are created before and deleted after EKS Node Group handling.
-  # Otherwise, EKS will not be able to properly delete EC2 Instances and Elastic Network Interfaces.
-  depends_on = [
-    aws_iam_role_policy_attachment.ng_worker_policy,
-    aws_iam_role_policy_attachment.ng_cni_policy,
-    aws_iam_role_policy_attachment.ng_registry_policy,
-  ]
-
-  lifecycle {
-    ignore_changes = [scaling_config[0].desired_size]
-  }
-}
-
-resource "aws_eks_node_group" "eks_ng" {
-  count           = var.launch_template_id == "" && var.launch_template_name == "" && var.ssh_key_pair == "" ? 1 : 0
-  cluster_name    = var.cluster_name
-  node_group_name = var.node_group_name == "" ? "${var.cluster_name}-ng" : var.node_group_name
-  node_role_arn   = aws_iam_role.eks_ng_role.arn
-  subnet_ids      = var.subnet_ids
-
-  scaling_config {
-    desired_size = var.desired_size
-    max_size     = var.max_size
-    min_size     = var.min_size
-  }
-
-  instance_types = [var.instance_type]
-  disk_size      = var.disk_size
-  ami_type       = var.ami_type
-
-  labels = length(var.labels) == 0 ? null : var.labels
-
-  # Ensure that IAM Role permissions are created before and deleted after EKS Node Group handling.
-  # Otherwise, EKS will not be able to properly delete EC2 Instances and Elastic Network Interfaces.
-  depends_on = [
-    aws_iam_role_policy_attachment.ng_worker_policy,
-    aws_iam_role_policy_attachment.ng_cni_policy,
-    aws_iam_role_policy_attachment.ng_registry_policy,
-  ]
-
-  lifecycle {
-    ignore_changes = [scaling_config[0].desired_size]
-  }
-}
-
-resource "aws_eks_node_group" "eks_ng_ssh" {
-  count           = var.launch_template_id == "" && var.launch_template_name == "" && var.ssh_key_pair != "" ? 1 : 0
-  cluster_name    = var.cluster_name
-  node_group_name = var.node_group_name == "" ? "${var.cluster_name}-ng" : var.node_group_name
-  node_role_arn   = aws_iam_role.eks_ng_role.arn
-  subnet_ids      = var.subnet_ids
-
-  scaling_config {
-    desired_size = var.desired_size
-    max_size     = var.max_size
-    min_size     = var.min_size
-  }
-
-  instance_types = [var.instance_type]
-  disk_size      = var.disk_size
-  ami_type       = var.ami_type
-
-  labels = length(var.labels) == 0 ? null : var.labels
-
-  remote_access {
-    ec2_ssh_key               = var.ssh_key_pair
-    source_security_group_ids = var.sg_ids
-  }
-
-  # Ensure that IAM Role permissions are created before and deleted after EKS Node Group handling.
-  # Otherwise, EKS will not be able to properly delete EC2 Instances and Elastic Network Interfaces.
-  depends_on = [
-    aws_iam_role_policy_attachment.ng_worker_policy,
-    aws_iam_role_policy_attachment.ng_cni_policy,
-    aws_iam_role_policy_attachment.ng_registry_policy,
-  ]
-
-  lifecycle {
-    ignore_changes = [scaling_config[0].desired_size]
-  }
-}
-
 resource "aws_iam_role" "eks_ng_role" {
+  count                 = var.ng_role_arn == "" ? 1 : 0
   name_prefix           = "${var.cluster_name}-ng-role-"
   force_detach_policies = true
 
@@ -118,24 +16,28 @@ resource "aws_iam_role" "eks_ng_role" {
 }
 
 resource "aws_iam_role_policy_attachment" "ng_worker_policy" {
+  count      = var.ng_role_arn == "" ? 1 : 0
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
-  role       = aws_iam_role.eks_ng_role.name
+  role       = join(", ", aws_iam_role.eks_ng_role.*.name)
 }
 
 resource "aws_iam_role_policy_attachment" "ng_cni_policy" {
+  count      = var.ng_role_arn == "" ? 1 : 0
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
-  role       = aws_iam_role.eks_ng_role.name
+  role       = join(", ", aws_iam_role.eks_ng_role.*.name)
 }
 
 resource "aws_iam_role_policy_attachment" "ng_registry_policy" {
+  count      = var.ng_role_arn == "" ? 1 : 0
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-  role       = aws_iam_role.eks_ng_role.name
+  role       = join(", ", aws_iam_role.eks_ng_role.*.name)
 }
 
 # Policy required for cluster autoscaling
 resource "aws_iam_role_policy" "eks_scaling_policy" {
+  count       = var.ng_role_arn == "" ? 1 : 0
   name_prefix = "${var.cluster_name}-ng-role-policy-"
-  role        = aws_iam_role.eks_ng_role.id
+  role        = join(", ", aws_iam_role.eks_ng_role.*.id)
 
   policy = <<-EOF
   {
@@ -157,4 +59,115 @@ resource "aws_iam_role_policy" "eks_scaling_policy" {
     ]
   }
   EOF
+}
+
+locals {
+  node_role_arn = var.ng_role_arn == "" ? join(", ", aws_iam_role.eks_ng_role.*.arn) : var.ng_role_arn
+}
+
+resource "aws_eks_node_group" "eks_ng_lt" {
+  count           = var.launch_template_id != "" || var.launch_template_name != "" ? 1 : 0
+  cluster_name    = var.cluster_name
+  node_group_name = var.ng_name == "" ? "${var.cluster_name}-ng" : var.ng_name
+  node_role_arn   = local.node_role_arn
+  subnet_ids      = var.subnet_ids
+
+  scaling_config {
+    desired_size = var.desired_size
+    max_size     = var.max_size
+    min_size     = var.min_size
+  }
+
+  launch_template {
+    id      = var.launch_template_name == "" ? var.launch_template_id : null
+    name    = var.launch_template_id == "" ? var.launch_template_name : null
+    version = var.launch_template_version
+  }
+
+  capacity_type = var.capacity_type
+
+  labels = length(var.labels) == 0 ? null : var.labels
+
+  # Ensure that IAM Role permissions are created before and deleted after EKS Node Group handling.
+  # Otherwise, EKS will not be able to properly delete EC2 Instances and Elastic Network Interfaces.
+  depends_on = [
+    aws_iam_role_policy_attachment.ng_worker_policy,
+    aws_iam_role_policy_attachment.ng_cni_policy,
+    aws_iam_role_policy_attachment.ng_registry_policy,
+  ]
+
+  lifecycle {
+    ignore_changes = [scaling_config[0].desired_size]
+  }
+}
+
+resource "aws_eks_node_group" "eks_ng" {
+  count           = var.launch_template_id == "" && var.launch_template_name == "" && var.ssh_key_pair == "" ? 1 : 0
+  cluster_name    = var.cluster_name
+  node_group_name = var.ng_name == "" ? "${var.cluster_name}-ng" : var.ng_name
+  node_role_arn   = local.node_role_arn
+  subnet_ids      = var.subnet_ids
+
+  scaling_config {
+    desired_size = var.desired_size
+    max_size     = var.max_size
+    min_size     = var.min_size
+  }
+
+  instance_types = [var.instance_type]
+  disk_size      = var.disk_size
+  ami_type       = var.ami_type
+  capacity_type  = var.capacity_type
+
+  labels = length(var.labels) == 0 ? null : var.labels
+
+  # Ensure that IAM Role permissions are created before and deleted after EKS Node Group handling.
+  # Otherwise, EKS will not be able to properly delete EC2 Instances and Elastic Network Interfaces.
+  depends_on = [
+    aws_iam_role_policy_attachment.ng_worker_policy,
+    aws_iam_role_policy_attachment.ng_cni_policy,
+    aws_iam_role_policy_attachment.ng_registry_policy,
+  ]
+
+  lifecycle {
+    ignore_changes = [scaling_config[0].desired_size]
+  }
+}
+
+resource "aws_eks_node_group" "eks_ng_ssh" {
+  count           = var.launch_template_id == "" && var.launch_template_name == "" && var.ssh_key_pair != "" ? 1 : 0
+  cluster_name    = var.cluster_name
+  node_group_name = var.ng_name == "" ? "${var.cluster_name}-ng" : var.ng_name
+  node_role_arn   = local.node_role_arn
+  subnet_ids      = var.subnet_ids
+
+  scaling_config {
+    desired_size = var.desired_size
+    max_size     = var.max_size
+    min_size     = var.min_size
+  }
+
+  instance_types = [var.instance_type]
+  disk_size      = var.disk_size
+  ami_type       = var.ami_type
+  capacity_type  = var.capacity_type
+
+  labels = length(var.labels) == 0 ? null : var.labels
+
+  remote_access {
+    ec2_ssh_key               = var.ssh_key_pair
+    source_security_group_ids = var.sg_ids
+  }
+
+  # Ensure that IAM Role permissions are created before and deleted after EKS Node Group handling.
+  # Otherwise, EKS will not be able to properly delete EC2 Instances and Elastic Network Interfaces.
+  depends_on = [
+    aws_iam_role_policy_attachment.ng_worker_policy,
+    aws_iam_role_policy_attachment.ng_cni_policy,
+    aws_iam_role_policy_attachment.ng_registry_policy,
+  ]
+
+  lifecycle {
+    ignore_changes = [scaling_config[0].desired_size]
+  }
 }

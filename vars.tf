@@ -1,6 +1,10 @@
 variable "cluster_name" {}
 
-variable "node_group_name" {
+variable "ng_name" {
+  default = ""
+}
+
+variable "ng_role_arn" {
   default = ""
 }
 
@@ -30,6 +34,10 @@ variable "min_size" {
   default = 2
 }
 
+variable "capacity_type" {
+  default = "ON_DEMAND"
+}
+
 variable "instance_type" {
   default = "t3.medium"
 }
@@ -39,7 +47,7 @@ variable "disk_size" {
 }
 
 variable "labels" {
-  type = map
+  type = map(any)
 
   default = {}
 }
@@ -53,6 +61,6 @@ variable "ssh_key_pair" {
 }
 
 variable "sg_ids" {
-  type    = list
+  type    = list(any)
   default = []
 }
