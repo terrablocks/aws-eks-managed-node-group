@@ -18,7 +18,8 @@ MIT Licence. See [Licence](LICENCE) for full details.
 |----------------------|---------|----------------------------------------------------------------------------------------------------------|------------|----------|
 | cluster_name     | string  | Name of EKS cluster                                                                                      |            | Y        |
 | ng_name     | string  | Name of EKS Node Group                                                                                      | {cluster_name}-ng           | N        |
-| ng_role_arn     | string  | AEN of IAM role to associate with EKS nodes. Leave it blank to create IAM role with required permissions      |         | N        |
+| create_ng_role     | boolean  | Whether to create new IAM role for EKS nodes      | true        | N        |
+| ng_role_arn     | string  | ARN of IAM role to associate with EKS nodes. Leave it blank to create IAM role with required permissions      |         | N        |
 | subnet_ids           | list    | List of subnet ids to be used for launching EKS nodes                                                    |            | Y        |
 | desired_size         | number  | Initial number of nodes to launch                                                                    | 2          | N        |
 | max_size             | number  | Maximum number of nodes                                                                                  | 4          | N        |

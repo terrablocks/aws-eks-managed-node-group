@@ -1,5 +1,5 @@
 resource "aws_iam_role" "eks_ng_role" {
-  count                 = var.ng_role_arn == "" ? 1 : 0
+  count                 = var.create_ng_role ? 1 : 0
   name_prefix           = "${var.cluster_name}-ng-role-"
   force_detach_policies = true
 
@@ -16,26 +16,26 @@ resource "aws_iam_role" "eks_ng_role" {
 }
 
 resource "aws_iam_role_policy_attachment" "ng_worker_policy" {
-  count      = var.ng_role_arn == "" ? 1 : 0
+  count      = var.create_ng_role ? 1 : 0
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
   role       = join(", ", aws_iam_role.eks_ng_role.*.name)
 }
 
 resource "aws_iam_role_policy_attachment" "ng_cni_policy" {
-  count      = var.ng_role_arn == "" ? 1 : 0
+  count      = var.create_ng_role ? 1 : 0
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
   role       = join(", ", aws_iam_role.eks_ng_role.*.name)
 }
 
 resource "aws_iam_role_policy_attachment" "ng_registry_policy" {
-  count      = var.ng_role_arn == "" ? 1 : 0
+  count      = var.create_ng_role ? 1 : 0
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
   role       = join(", ", aws_iam_role.eks_ng_role.*.name)
 }
 
 # Policy required for cluster autoscaling
 resource "aws_iam_role_policy" "eks_scaling_policy" {
-  count       = var.ng_role_arn == "" ? 1 : 0
+  count       = var.create_ng_role ? 1 : 0
   name_prefix = "${var.cluster_name}-ng-role-policy-"
   role        = join(", ", aws_iam_role.eks_ng_role.*.id)
 
@@ -62,7 +62,7 @@ resource "aws_iam_role_policy" "eks_scaling_policy" {
 }
 
 locals {
-  node_role_arn = var.ng_role_arn == "" ? join(", ", aws_iam_role.eks_ng_role.*.arn) : var.ng_role_arn
+  node_role_arn = var.create_ng_role ? join(", ", aws_iam_role.eks_ng_role.*.arn) : var.ng_role_arn
 }
 
 resource "aws_eks_node_group" "eks_ng_lt" {

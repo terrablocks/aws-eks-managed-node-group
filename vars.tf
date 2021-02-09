@@ -4,6 +4,10 @@ variable "ng_name" {
   default = ""
 }
 
+variable "create_ng_role" {
+  default = true
+}
+
 variable "ng_role_arn" {
   default = ""
 }
