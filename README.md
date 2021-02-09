@@ -13,6 +13,15 @@ This terraform module will deploy the following services:
 MIT Licence. See [Licence](LICENCE) for full details.
 
 # Usage Instructions:
+## Example
+```terraform
+module "eks_worker" {
+  source = "github.com/terrablocks/aws-eks-managed-node-group.git"
+
+  cluster_name = "eks-cluster"
+  subnet_ids   = []
+}
+```
 ## Variables
 | Parameter            | Type    | Description                                                                                              | Default    | Required |
 |----------------------|---------|----------------------------------------------------------------------------------------------------------|------------|----------|
