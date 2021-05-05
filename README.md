@@ -1,76 +1,80 @@
 # Launch an EKS Managed Node Group
 
+![License](https://img.shields.io/github/license/terrablocks/aws-eks-managed-node-group?style=for-the-badge) ![Tests](https://img.shields.io/github/workflow/status/terrablocks/aws-eks-managed-node-group/tests/master?label=Test&style=for-the-badge) ![Checkov](https://img.shields.io/github/workflow/status/terrablocks/aws-eks-managed-node-group/checkov/master?label=Checkov&style=for-the-badge) ![Commit](https://img.shields.io/github/last-commit/terrablocks/aws-eks-managed-node-group?style=for-the-badge) ![Release](https://img.shields.io/github/v/release/terrablocks/aws-eks-managed-node-group?style=for-the-badge)
+
 This terraform module will deploy the following services:
 - EKS Node Group
-- Launch Template
 - Auto Scaling Group
 - IAM Role
 - IAM Role Policy
 
-## Licence:
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
-
-MIT Licence. See [Licence](LICENCE) for full details.
-
-# Usage Instructions:
+# Usage Instructions
 ## Example
 ```terraform
-module "eks_worker" {
+module "vpc" {
   source = "github.com/terrablocks/aws-eks-managed-node-group.git"
 
   cluster_name = "eks-cluster"
-  subnet_ids   = []
+  subnet_ids   = ["subnet-xxxx", "subnet-yyyy"]
 }
 ```
-## Variables
-| Parameter            | Type    | Description                                                                                              | Default    | Required |
-|----------------------|---------|----------------------------------------------------------------------------------------------------------|------------|----------|
-| cluster_name     | string  | Name of EKS cluster                                                                                      |            | Y        |
-| ng_name     | string  | Name of EKS Node Group                                                                                      | {cluster_name}-ng           | N        |
-| create_ng_role     | boolean  | Whether to create new IAM role for EKS nodes      | true        | N        |
-| ng_role_arn     | string  | ARN of IAM role to associate with EKS nodes. Leave it blank to create IAM role with required permissions      |         | N        |
-| subnet_ids           | list    | List of subnet ids to be used for launching EKS nodes                                                    |            | Y        |
-| desired_size         | number  | Initial number of nodes to launch                                                                    | 2          | N        |
-| max_size             | number  | Maximum number of nodes                                                                                  | 4          | N        |
-| min_size             | number  | Minimum number of nodes to maintain at any given point of time                                           | 2          | N        |
-| capacity_type        | string  | Type of purchase option to be used for EKS node. **Possible Values**: ON_DEMAND or SPOT                  | ON_DEMAND  | N        |
-| instance_type        | string  | Type of instance to be used for EKS nodes                                                                | t3.medium  | N        |
-| disk_size            | number  | Size of each EBS volume attached to EKS node                                                             | 20         | N        |
-| labels            | map  | Key-value map of Kubernetes labels to be apply on nodes                                                             |          | N        |
-| ami_type             | string  | Type of AMI to be used for EKS node. Supported values: AL2_x86_64, AL2_x86_64_GPU(AMI with GPU support)  | AL2_x86_64 | N        |
-| ssh_key_pair         | string  | SSH Key pair to use for remote access of EKS node |            | N        |
-| sg_ids               | list    | List of security groups id to attach to EKS nodes for restricting SSH access.                 |            | N        |
+
+## Requirements
+
+| Name | Version |
+|------|---------|
+| terraform | >= 0.13 |
+| aws | >= 3.37.0 |
+| random | >= 3.1.0 |
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| cluster_name | Name of EKS cluster | `string` | n/a | yes |
+| ng_name | Name of EKS Node Group. Default: {cluster_name}-ng | `string` | `""` | no |
+| create_ng_role | Whether to create new IAM role for EKS nodes | `bool` | `true` | no |
+| ng_role_arn | ARN of IAM role to associate with EKS nodes. Leave it blank to create IAM role with required permissions | `string` | `""` | no |
+| subnet_ids | List of subnet ids to be used for launching EKS nodes | `list(string)` | n/a | yes |
+| launch_template_id | Launch template id to use for node group | `string` | `""` | no |
+| launch_template_name | Launch template name to use for node group | `string` | `""` | no |
+| launch_template_version | Launch template version to use for launching instances | `string` | `"$Latest"` | no |
+| desired_size | Initial number of nodes to launch | `number` | `2` | no |
+| max_size | Maximum number of nodes | `number` | `4` | no |
+| min_size | Minimum number of nodes to maintain at any given point of time | `number` | `2` | no |
+| capacity_type | Type of purchase option to be used for EKS node. **Possible Values**: ON_DEMAND or SPOT | `string` | `"ON_DEMAND"` | no |
+| instance_type | Type of instance to be used for EKS nodes | `string` | `"t3.medium"` | no |
+| disk_size | Size of each EBS volume attached to EKS node | `number` | `20` | no |
+| labels | Key Value pair of Kubernetes labels to apply on nodes | `map(string)` | `{}` | no |
+| ami_type | Type of AMI to be used for EKS node. Supported values: AL2_x86_64, AL2_ARM_64, AL2_x86_64_GPU(AMI with GPU support) | `string` | `"AL2_x86_64"` | no |
+| ssh_key_pair | SSH Key pair to use for remote access of EKS node | `string` | `""` | no |
+| sg_ids | List of security groups id to attach to EKS nodes for restricting SSH access | `list(string)` | `[]` | no |
 
 ## Outputs
-| Parameter           | Type   | Description               |
-|---------------------|--------|---------------------------|
-| arn           | string | ARN of EKS node group created            |
-| id | string | EKS Cluster name and EKS Node Group name separated by a colon       |
-| cluster_name           | string | Name of EKS cluster attached to the node group            |
-| role_arn           | string | ARN of IAM role associated with EKS node group            |
-| status           | string | Status of EKS node group            |
 
-## Deployment
-- `terraform init` - download plugins required to deploy resources
-- `terraform plan` - get detailed view of resources that will be created, deleted or replaced
-- `terraform apply -auto-approve` - deploy the template without confirmation (non-interactive mode)
-- `terraform destroy -auto-approve` - terminate all the resources created using this template without confirmation (non-interactive mode)
+| Name | Description |
+|------|-------------|
+| arn | ARN of EKS node group created |
+| id | EKS Cluster name and EKS Node Group name separated by a colon |
+| cluster_name | Name of EKS cluster attached to the node group |
+| role_arn | ARN of IAM role associated with EKS node group |
+| status | Status of EKS node group |
 
 ## Cluster Autoscaler Setup (Source: [AWS](https://docs.aws.amazon.com/eks/latest/userguide/cluster-autoscaler.html#ca-deploy))
 To enable Cluster Autoscaler execute the following steps:
 
 #### Deploy Cluster Autoscaler:
-```
+```bash
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/autoscaler/master/cluster-autoscaler/cloudprovider/aws/examples/cluster-autoscaler-autodiscover.yaml
 ```
 
 #### Add annotation to `cluster-autoscaler` deployment:
-```
+```bash
 kubectl -n kube-system annotate deployment.apps/cluster-autoscaler cluster-autoscaler.kubernetes.io/safe-to-evict="false"
 ```
 
 #### Edit `custer-autoscaler` deployment and do the required changes:
-```
+```bash
 kubectl -n kube-system edit deployment.apps/cluster-autoscaler
 ```
 
@@ -99,11 +103,11 @@ spec:
 - Visit Cluster Autoscaler [releases](https://github.com/kubernetes/autoscaler/releases) to get the latest semantic version number for your kubernetes version. Eg: If your k8s version is 1.16, look for the latest release of cluster-autoscaler beginning with your k8s version and note down the semantic version (1.16.`x`)
 - You can replace `us` with `asia` or `eu` as per proximity
 
-```
+```bash
 kubectl -n kube-system set image deployment.apps/cluster-autoscaler cluster-autoscaler=us.gcr.io/k8s-artifacts-prod/autoscaling/cluster-autoscaler:v1.16.x
 ```
 
 #### Verify Cluster Autoscaler deployment by checking logs:
-```
+```bash
 kubectl -n kube-system logs -f deployment.apps/cluster-autoscaler
 ```
