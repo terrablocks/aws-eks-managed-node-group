@@ -103,3 +103,9 @@ variable "sg_ids" {
   default     = []
   description = "List of security groups id to attach to EKS nodes for restricting SSH access"
 }
+
+variable "tags" {
+  type        = map(string)
+  default     = {}
+  description = "Key Value pair to associate with node group"
+}

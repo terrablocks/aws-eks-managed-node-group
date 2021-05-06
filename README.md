@@ -49,6 +49,7 @@ module "vpc" {
 | ami_type | Type of AMI to be used for EKS node. Supported values: AL2_x86_64, AL2_ARM_64, AL2_x86_64_GPU(AMI with GPU support) | `string` | `"AL2_x86_64"` | no |
 | ssh_key_pair | SSH Key pair to use for remote access of EKS node | `string` | `""` | no |
 | sg_ids | List of security groups id to attach to EKS nodes for restricting SSH access | `list(string)` | `[]` | no |
+| tags | Key Value pair to associate with node group | `map(string)` | `{}` | no |
 
 ## Outputs
 

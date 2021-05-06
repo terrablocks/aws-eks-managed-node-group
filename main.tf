@@ -96,6 +96,8 @@ resource "aws_eks_node_group" "eks_ng_lt" {
     aws_iam_role_policy_attachment.ng_registry_policy,
   ]
 
+  tags = var.tags
+
   lifecycle {
     ignore_changes = [scaling_config[0].desired_size]
   }
@@ -128,6 +130,8 @@ resource "aws_eks_node_group" "eks_ng" {
     aws_iam_role_policy_attachment.ng_cni_policy,
     aws_iam_role_policy_attachment.ng_registry_policy,
   ]
+
+  tags = var.tags
 
   lifecycle {
     ignore_changes = [scaling_config[0].desired_size]
@@ -166,6 +170,8 @@ resource "aws_eks_node_group" "eks_ng_ssh" {
     aws_iam_role_policy_attachment.ng_cni_policy,
     aws_iam_role_policy_attachment.ng_registry_policy,
   ]
+
+  tags = var.tags
 
   lifecycle {
     ignore_changes = [scaling_config[0].desired_size]
