@@ -25,7 +25,6 @@ module "vpc" {
 |------|---------|
 | terraform | >= 0.13 |
 | aws | >= 3.37.0 |
-| random | >= 3.1.0 |
 
 ## Inputs
 
