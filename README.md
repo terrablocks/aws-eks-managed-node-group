@@ -11,7 +11,7 @@ This terraform module will deploy the following services:
 # Usage Instructions
 ## Example
 ```terraform
-module "vpc" {
+module "eks_worker" {
   source = "github.com/terrablocks/aws-eks-managed-node-group.git"
 
   cluster_name = "eks-cluster"
