@@ -26,22 +26,17 @@ variable "subnet_ids" {
   description = "List of subnet ids to be used for launching EKS nodes"
 }
 
-variable "launch_template_id" {
-  type        = string
-  default     = ""
-  description = "Launch template id to use for node group"
-}
-
-variable "launch_template_name" {
-  type        = string
-  default     = ""
-  description = "Launch template name to use for node group"
-}
-
-variable "launch_template_version" {
-  type        = string
-  default     = "$Latest"
-  description = "Launch template version to use for launching instances"
+variable "launch_template" {
+  type        = map(any)
+  default     = {}
+  description = <<-EOT
+    A config block with launch template details
+    ```{
+      id      = ID of the EC2 Launch Template to use. **Note:** Either `id` or `name` is required
+      name    = Name of the EC2 Launch Template to use. **Note:** Either `id` or `name` is required
+      version = EC2 Launch Template version to use for launching instances
+    }```
+  EOT
 }
 
 variable "desired_size" {
@@ -92,16 +87,29 @@ variable "ami_type" {
   description = "Type of AMI to be used for EKS node. Supported values: AL2_x86_64, AL2_ARM_64, AL2_x86_64_GPU(AMI with GPU support)"
 }
 
-variable "ssh_key_pair" {
-  type        = string
-  default     = ""
-  description = "SSH Key pair to use for remote access of EKS node"
+variable "remote_access" {
+  type        = map(any)
+  default     = {}
+  description = <<-EOT
+    A config block with EC2 remote access details
+    ```{
+      ssh_key_name = Name of SSH key pair to associate to instances launched via node group
+      sg_ids       = Security group ids to attach to instances launched via node group
+    }```
+  EOT
 }
 
-variable "sg_ids" {
-  type        = list(string)
+variable "taints" {
+  type        = list(any)
   default     = []
-  description = "List of security groups id to attach to EKS nodes for restricting SSH access"
+  description = <<-EOT
+    List of taint block to associate with node group. Maximum of 50 taints per node group are supported
+    ```{
+      key    = Key of taint
+      value  = (Optional) Value of taint
+      effect = Effect of taint. **Possible values:** NO_SCHEDULE, NO_EXECUTE or PREFER_NO_SCHEDULE
+    }```
+  EOT
 }
 
 variable "tags" {

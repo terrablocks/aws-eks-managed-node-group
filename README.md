@@ -24,7 +24,7 @@ module "eks_worker" {
 | Name | Version |
 |------|---------|
 | terraform | >= 0.13 |
-| aws | >= 3.37.0 |
+| aws | >= 3.44.0 |
 
 ## Inputs
 
@@ -35,9 +35,7 @@ module "eks_worker" {
 | create_ng_role | Whether to create new IAM role for EKS nodes | `bool` | `true` | no |
 | ng_role_arn | ARN of IAM role to associate with EKS nodes. Leave it blank to create IAM role with required permissions | `string` | `""` | no |
 | subnet_ids | List of subnet ids to be used for launching EKS nodes | `list(string)` | n/a | yes |
-| launch_template_id | Launch template id to use for node group | `string` | `""` | no |
-| launch_template_name | Launch template name to use for node group | `string` | `""` | no |
-| launch_template_version | Launch template version to use for launching instances | `string` | `"$Latest"` | no |
+| launch_template | A config block with launch template details<pre>{<br>  id      = ID of the EC2 Launch Template to use. **Note:** Either `id` or `name` is required<br>  name    = Name of the EC2 Launch Template to use. **Note:** Either `id` or `name` is required<br>  version = EC2 Launch Template version to use for launching instances<br>}</pre> | `map(any)` | `{}` | no |
 | desired_size | Initial number of nodes to launch | `number` | `2` | no |
 | max_size | Maximum number of nodes | `number` | `4` | no |
 | min_size | Minimum number of nodes to maintain at any given point of time | `number` | `2` | no |
@@ -46,8 +44,8 @@ module "eks_worker" {
 | disk_size | Size of each EBS volume attached to EKS node | `number` | `20` | no |
 | labels | Key Value pair of Kubernetes labels to apply on nodes | `map(string)` | `{}` | no |
 | ami_type | Type of AMI to be used for EKS node. Supported values: AL2_x86_64, AL2_ARM_64, AL2_x86_64_GPU(AMI with GPU support) | `string` | `"AL2_x86_64"` | no |
-| ssh_key_pair | SSH Key pair to use for remote access of EKS node | `string` | `""` | no |
-| sg_ids | List of security groups id to attach to EKS nodes for restricting SSH access | `list(string)` | `[]` | no |
+| remote_access | A config block with EC2 remote access details<pre>{<br>  ssh_key_name = Name of SSH key pair to associate to instances launched via node group<br>  sg_ids       = Security group ids to attach to instances launched via node group<br>}</pre> | `map(any)` | `{}` | no |
+| taints | List of taint block to associate with node group. Maximum of 50 taints per node group are supported<pre>{<br>  key    = Key of taint<br>  value  = (Optional) Value of taint<br>  effect = Effect of taint. **Possible values:** NO_SCHEDULE, NO_EXECUTE or PREFER_NO_SCHEDULE<br>}</pre> | `list(any)` | `[]` | no |
 | tags | Key Value pair to associate with node group | `map(string)` | `{}` | no |
 
 ## Outputs
