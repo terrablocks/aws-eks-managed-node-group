@@ -54,9 +54,11 @@ module "eks_worker" {
 |------|-------------|
 | arn | ARN of EKS node group created |
 | id | EKS Cluster name and EKS Node Group name separated by a colon |
-| cluster_name | Name of EKS cluster attached to the node group |
-| role_arn | ARN of IAM role associated with EKS node group |
-| status | Status of EKS node group |
+| name | Name of the managed node group associated with the EKS cluster |
+| cluster_name | Name of the EKS cluster attached to the node group |
+| role_arn | ARN of the IAM role associated with EKS node group |
+| role_name | Name of the IAM role associated with EKS node group |
+| status | Status of the EKS node group |
 
 ## Cluster Autoscaler Setup (Source: [AWS](https://docs.aws.amazon.com/eks/latest/userguide/cluster-autoscaler.html#ca-deploy))
 To enable Cluster Autoscaler execute the following steps:
