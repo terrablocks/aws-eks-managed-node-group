@@ -1,6 +1,6 @@
 # Launch an EKS Managed Node Group
 
-![License](https://img.shields.io/github/license/terrablocks/aws-eks-managed-node-group?style=for-the-badge) ![Tests](https://img.shields.io/github/actions/workflow/status/terrablocks/aws-eks-managed-node-group/tests.yml?branch=main&label=Test&style=for-the-badge) ![Checkov](https://img.shields.io/github/actions/workflow/status/terrablocks/aws-eks-managed-node-group/checkov.yml?branch=main&label=Test&style=for-the-badge) ![Commit](https://img.shields.io/github/last-commit/terrablocks/aws-eks-managed-node-group?style=for-the-badge) ![Release](https://img.shields.io/github/v/release/terrablocks/aws-eks-managed-node-group?style=for-the-badge)
+![License](https://img.shields.io/github/license/terrablocks/aws-eks-managed-node-group?style=for-the-badge) ![Tests](https://img.shields.io/github/actions/workflow/status/terrablocks/aws-eks-managed-node-group/tests.yml?branch=main&label=Test&style=for-the-badge) ![Checkov](https://img.shields.io/github/actions/workflow/status/terrablocks/aws-eks-managed-node-group/checkov.yml?branch=main&label=Checkov&style=for-the-badge) ![Commit](https://img.shields.io/github/last-commit/terrablocks/aws-eks-managed-node-group?style=for-the-badge) ![Release](https://img.shields.io/github/v/release/terrablocks/aws-eks-managed-node-group?style=for-the-badge)
 
 This terraform module will deploy the following services:
 - EKS Node Group
