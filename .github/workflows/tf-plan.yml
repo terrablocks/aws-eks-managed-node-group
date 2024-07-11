@@ -1,0 +1,29 @@
+name: tf-plan
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: read  # This is required for actions/checkout
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.TF_READ_ONLY_GITHUB_OIDC_ROLE_ARN }}
+          aws-region: eu-west-1
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+      - name: Terraform Init
+        id: init
+        run: terraform init
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -var 'cluster_name=test' -var 'subnet_ids=["", ""]'
