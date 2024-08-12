@@ -64,9 +64,9 @@ variable "capacity_type" {
 }
 
 variable "instance_type" {
-  type        = string
-  default     = "t3.medium"
-  description = "Type of instance to be used for EKS nodes"
+  type        = list(string)
+  default     = ["t3.medium"]
+  description = "List of type of instances to be used as EKS nodes"
 }
 
 variable "disk_size" {

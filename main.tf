@@ -35,6 +35,8 @@ resource "aws_iam_role_policy_attachment" "ng_registry_policy" {
 
 # Policy required for cluster autoscaling
 resource "aws_iam_role_policy" "eks_scaling_policy" {
+  # checkov:skip=CKV_AWS_290: write access without constraint is required
+  # checkov:skip=CKV_AWS_355: "*" for resource is required
   count       = var.create_ng_role ? 1 : 0
   name_prefix = "${var.cluster_name}-ng-role-policy-"
   role        = join(", ", aws_iam_role.eks_ng_role.*.id)
