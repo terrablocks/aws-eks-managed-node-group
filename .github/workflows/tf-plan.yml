@@ -26,4 +26,4 @@ jobs:
         run: terraform init
       - name: Terraform Plan
         id: plan
-        run: terraform plan -var 'cluster_name=test' -var 'subnet_ids=["", ""]'
+        run: terraform plan -var 'cluster_name=test' -var 'subnet_ids=["${{ secrets.PVT_SUBNET_ID_1 }}", "${{ secrets.PVT_SUBNET_ID_2 }}"]'
