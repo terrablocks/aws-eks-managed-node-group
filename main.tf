@@ -18,19 +18,19 @@ resource "aws_iam_role" "eks_ng_role" {
 resource "aws_iam_role_policy_attachment" "ng_worker_policy" {
   count      = var.create_ng_role ? 1 : 0
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
-  role       = join(", ", aws_iam_role.eks_ng_role.*.name)
+  role       = join(", ", aws_iam_role.eks_ng_role[*].name)
 }
 
 resource "aws_iam_role_policy_attachment" "ng_cni_policy" {
   count      = var.create_ng_role ? 1 : 0
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
-  role       = join(", ", aws_iam_role.eks_ng_role.*.name)
+  role       = join(", ", aws_iam_role.eks_ng_role[*].name)
 }
 
 resource "aws_iam_role_policy_attachment" "ng_registry_policy" {
   count      = var.create_ng_role ? 1 : 0
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-  role       = join(", ", aws_iam_role.eks_ng_role.*.name)
+  role       = join(", ", aws_iam_role.eks_ng_role[*].name)
 }
 
 # Policy required for cluster autoscaling
@@ -39,7 +39,7 @@ resource "aws_iam_role_policy" "eks_scaling_policy" {
   # checkov:skip=CKV_AWS_355: "*" for resource is required
   count       = var.create_ng_role ? 1 : 0
   name_prefix = "${var.cluster_name}-ng-role-policy-"
-  role        = join(", ", aws_iam_role.eks_ng_role.*.id)
+  role        = join(", ", aws_iam_role.eks_ng_role[*].id)
 
   policy = <<-EOF
   {
@@ -64,14 +64,19 @@ resource "aws_iam_role_policy" "eks_scaling_policy" {
 }
 
 locals {
-  node_role_arn = var.create_ng_role ? join(", ", aws_iam_role.eks_ng_role.*.arn) : var.ng_role_arn
+  node_role_arn = var.create_ng_role ? join(", ", aws_iam_role.eks_ng_role[*].arn) : var.ng_role_arn
 }
 
 resource "aws_eks_node_group" "eks_ng" {
-  cluster_name    = var.cluster_name
-  node_group_name = var.ng_name == "" ? "${var.cluster_name}-ng" : var.ng_name
-  node_role_arn   = local.node_role_arn
-  subnet_ids      = var.subnet_ids
+  cluster_name         = var.cluster_name
+  node_group_name      = var.ng_name == "" ? "${var.cluster_name}-ng" : var.ng_name
+  node_role_arn        = local.node_role_arn
+  subnet_ids           = var.subnet_ids
+  ami_type             = var.ami_type
+  release_version      = var.ami_release_version
+  disk_size            = var.disk_size
+  force_update_version = var.force_update_version
+  instance_types       = var.instance_types
 
   scaling_config {
     desired_size = var.desired_size
