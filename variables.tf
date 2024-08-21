@@ -127,5 +127,5 @@ variable "force_update_version" {
 variable "tags" {
   type        = map(string)
   default     = {}
-  description = "Key Value pair to associate with node group"
+  description = "Key Value pair to associate with EKS node group"
 }
