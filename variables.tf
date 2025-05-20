@@ -83,8 +83,8 @@ variable "labels" {
 
 variable "ami_type" {
   type        = string
-  default     = "AL2_x86_64"
-  description = "Type of AMI to be used for EKS worker node. Supported values: AL2_x86_64, AL2_ARM_64, AL2_x86_64_GPU(AMI with GPU support)"
+  default     = "AL2023_x86_64_STANDARD"
+  description = "Refer to [AWS doc](https://docs.aws.amazon.com/eks/latest/APIReference/API_Nodegroup.html#AmazonEKS-Type-Nodegroup-amiType) for supported AMI types"
 }
 
 variable "ami_release_version" {
@@ -122,6 +122,29 @@ variable "force_update_version" {
   type        = bool
   default     = false
   description = "Forcefully perform version update for worker nodes if pod disruption prevents node draining"
+}
+
+variable "enable_node_auto_repair" {
+  type        = bool
+  default     = true
+  description = "Whether to enable node auto repair for the node group"
+}
+
+variable "max_unavailable" {
+  type        = number
+  default     = 1
+  description = "Maximum number/percentage of nodes that can be unavailable during the node group update"
+}
+
+variable "max_unavailable_type" {
+  type        = string
+  default     = "count"
+  description = "Type of maximum unavailable nodes. **Valid values:** count or percentage"
+
+  validation {
+    condition     = var.max_unavailable_type == "count" || var.max_unavailable_type == "percentage"
+    error_message = "Invalid value for max_unavailable_type. Valid values: count or percentage"
+  }
 }
 
 variable "tags" {

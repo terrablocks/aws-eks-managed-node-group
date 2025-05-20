@@ -114,6 +114,15 @@ resource "aws_eks_node_group" "eks_ng" {
 
   labels = length(var.labels) == 0 ? null : var.labels
 
+  node_repair_config {
+    enabled = var.enable_node_auto_repair
+  }
+
+  update_config {
+    max_unavailable            = var.max_unavailable_type == "count" ? var.max_unavailable : null
+    max_unavailable_percentage = var.max_unavailable_type == "percentage" ? var.max_unavailable : null
+  }
+
   # Ensure that IAM Role permissions are created before and deleted after EKS Node Group handling.
   # Otherwise, EKS will not be able to properly delete EC2 Instances and Elastic Network Interfaces.
   depends_on = [
