@@ -60,7 +60,7 @@ variable "min_size" {
 variable "capacity_type" {
   type        = string
   default     = "ON_DEMAND"
-  description = "Type of purchase option to be used for EKS worker node. **Possible Values**: ON_DEMAND or SPOT"
+  description = "Type of purchase option to be used for EKS worker node. **Possible Values**: `ON_DEMAND` or `SPOT`"
 }
 
 variable "instance_types" {

@@ -32,17 +32,20 @@ module "eks_managed_node_group" {
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | ami_release_version | AMI version to use for EKS worker nodes. Leaving it to null will use latest available version | `string` | `null` | no |
-| ami_type | Type of AMI to be used for EKS worker node. Supported values: AL2_x86_64, AL2_ARM_64, AL2_x86_64_GPU(AMI with GPU support) | `string` | `"AL2_x86_64"` | no |
-| capacity_type | Type of purchase option to be used for EKS worker node. **Possible Values**: ON_DEMAND or SPOT | `string` | `"ON_DEMAND"` | no |
+| ami_type | Refer to [AWS doc](https://docs.aws.amazon.com/eks/latest/APIReference/API_Nodegroup.html#AmazonEKS-Type-Nodegroup-amiType) for supported AMI types | `string` | `"AL2023_x86_64_STANDARD"` | no |
+| capacity_type | Type of purchase option to be used for EKS worker node. **Possible Values**: `ON_DEMAND` or `SPOT` | `string` | `"ON_DEMAND"` | no |
 | cluster_name | Name of EKS cluster | `string` | n/a | yes |
 | create_ng_role | Whether to create new IAM role for EKS worker nodes | `bool` | `true` | no |
 | desired_size | Initial number of worker nodes to launch | `number` | `2` | no |
-| disk_size | Size of each EBS volume attached to EKS worker node | `number` | `20` | no |
+| disk_size | Size of each EBS volume attached to EKS worker node. **Note:** Not required when using `launch_template` variable | `number` | `null` | no |
+| enable_node_auto_repair | Whether to enable node auto repair for the node group | `bool` | `true` | no |
 | force_update_version | Forcefully perform version update for worker nodes if pod disruption prevents node draining | `bool` | `false` | no |
-| instance_types | List of type of instances to be used as EKS worker nodes | `list(string)` | ```[ "t3.medium" ]``` | no |
+| instance_types | List of type of instances to be used as EKS worker nodes. **Note:** Not required when using `launch_template` variable | `list(string)` | `null` | no |
 | labels | Key Value pair of Kubernetes labels to apply on worker nodes | `map(string)` | `{}` | no |
 | launch_template | A config block with launch template details ```{ id = ID of the EC2 Launch Template to use. **Note:** Either `id` or `name` is required name = Name of the EC2 Launch Template to use. **Note:** Either `id` or `name` is required version = EC2 Launch Template version to use for launching instances }``` | `map(any)` | `{}` | no |
 | max_size | Maximum number of worker nodes | `number` | `4` | no |
+| max_unavailable | Maximum number/percentage of nodes that can be unavailable during the node group update | `number` | `1` | no |
+| max_unavailable_type | Type of maximum unavailable nodes. **Valid values:** count or percentage | `string` | `"count"` | no |
 | min_size | Minimum number of worker nodes to maintain at any given point of time | `number` | `2` | no |
 | ng_name | Name of EKS Node Group. Default: {cluster_name}-ng | `string` | `""` | no |
 | ng_role_arn | ARN of IAM role to associate with EKS worker nodes. Leave it blank to create IAM role with required permissions | `string` | `""` | no |
