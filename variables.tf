@@ -66,13 +66,13 @@ variable "capacity_type" {
 variable "instance_types" {
   type        = list(string)
   default     = null
-  description = "List of type of instances to be used as EKS worker nodes"
+  description = "List of type of instances to be used as EKS worker nodes. **Note:** Not required when using `launch_template` variable"
 }
 
 variable "disk_size" {
   type        = number
   default     = null
-  description = "Size of each EBS volume attached to EKS worker node"
+  description = "Size of each EBS volume attached to EKS worker node. **Note:** Not required when using `launch_template` variable"
 }
 
 variable "labels" {
