@@ -65,13 +65,13 @@ variable "capacity_type" {
 
 variable "instance_types" {
   type        = list(string)
-  default     = ["t3.medium"]
+  default     = null
   description = "List of type of instances to be used as EKS worker nodes"
 }
 
 variable "disk_size" {
   type        = number
-  default     = 20
+  default     = null
   description = "Size of each EBS volume attached to EKS worker node"
 }
 
